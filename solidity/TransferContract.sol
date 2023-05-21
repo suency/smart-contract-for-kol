@@ -20,6 +20,8 @@ contract TransferContract {
         uint256 balance;
     }
 
+    event TransferValueEvent(address indexed sender, uint256 v1, uint256 v2, uint256 v3);
+
     constructor(uint256 initPercentage) {
         require(initPercentage >= 0 && initPercentage <=100 , "Amount should be >= 0 and <= 100");
         contractCreator = msg.sender; // contract creator address = seller address
@@ -43,6 +45,7 @@ contract TransferContract {
         payable(agentAddress).transfer(agentAmount); // pay to agent
 
         list[msg.sender][agentAddress] += agentAmount; // update balance in list (buyer and agent)
+        emit TransferValueEvent(msg.sender, msg.value, creatorAmount, agentAmount);
     }
 
     // get data from list
