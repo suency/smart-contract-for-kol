@@ -2,7 +2,7 @@ const Web3 = require('web3');
 const fs = require('fs');
 const solc = require('solc');
 const cors = require('cors');
-
+const contractData = require('./TransferContract.json');
 const express = require('express');
 const app = express();
 app.use(cors());
@@ -48,16 +48,8 @@ const input = {
 
 function getCompileContract() {
   // compile contract
-  const compiledContract = JSON.parse(solc.compile(JSON.stringify(input)));
-
-  //get abi and byte code
-  //const contractABI = compiledContract.contracts[`${fileName}.sol`][`${fileName}`].abi;
-  //const contractBytecode = compiledContract.contracts[`${fileName}.sol`][`${fileName}`].evm.bytecode.object;
-
-  const contractName = Object.keys(compiledContract.contracts[`${fileName}.sol`])[0];
-  const contractBytecode = compiledContract.contracts[`${fileName}.sol`][contractName].evm.bytecode.object;
-  const contractABI = compiledContract.contracts[`${fileName}.sol`][contractName].abi;
-  
+  const contractABI = contractData.abi;
+  const contractBytecode = contractData.bytecode;
   console.log('Contract ABI:', contractABI);
   console.log('Contract Bytecode:', contractBytecode);
   return {
