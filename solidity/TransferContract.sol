@@ -2,12 +2,11 @@
 
 pragma solidity >=0.8.2 <0.9.0;
 
-/**
- * @title Storage
- * @dev Store & retrieve value in a variable
- * @custom:dev-run-script ./scripts/deploy_with_ethers.ts
- */
-
+/* 
+general idea:
+user make a transaction with 100 for example, seller can get 90 and agent can get 10, 
+if contract create set the percentage is 90%
+*/
 contract TransferContract {
     address public contractCreator;
     uint256 public percentage; //seller set the percentage
