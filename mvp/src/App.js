@@ -1,6 +1,7 @@
 import { FileOutlined, PieChartOutlined, UserOutlined, DesktopOutlined, TeamOutlined } from '@ant-design/icons';
-import { Layout, Menu, theme ,Button, Form, Input, InputNumber} from 'antd';
+import { Layout, Menu, theme, Button, Form, Input, InputNumber } from 'antd';
 import { useEffect, useState } from 'react';
+import Web3 from 'web3';
 const { Header, Content, Footer, Sider } = Layout;
 const layout = {
   labelCol: {
@@ -34,52 +35,96 @@ const onFinish = () => {
 
 }
 const Mvp = () => {
-  useEffect(()=>{
-    
-  },[])
+  const [web3, setWeb3] = useState(null);
+  const [account, setAccount] = useState('');
+  const [balance, setBalance] = useState('');
+  useEffect(() => {
+  }, []);
+
+  //https://tp-statics.tokenpocket.pro/chains.json
+  const getNetworkInfo = async () => {
+
+    const provider = web3.currentProvider;
+    const web3WithProvider = new Web3(provider);
+    web3WithProvider.eth.net.getId()
+      .then(networkId => {
+        console.log('Network Name:', networkId);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  };
+
+  const connectWallet = () => {
+    if (typeof window.ethereum !== 'undefined') {
+      // Enable Web3 and retrieve the selected account
+      window.ethereum.enable().then(accounts => {
+        const web3 = new Web3(window.ethereum);
+        setWeb3(web3);
+        setAccount(accounts[0]);
+      });
+    }
+  }
+  const fetchBalance = async () => {
+    if (web3 && account) {
+      // Get the account balance
+      const balanceWei = await web3.eth.getBalance(account);
+      const balanceEth = web3.utils.fromWei(balanceWei, 'ether');
+      setBalance(balanceEth);
+    }
+  };
+
   return (
     <div><Form
-    {...layout}
-    name="nest-messages"
-    onFinish={onFinish}
-    style={{
-      maxWidth: 600,
-    }}
-  >
-    <Form.Item
-      name={['user', 'address']}
-      label="Kol address"
-    >
-      <Input />
-    </Form.Item>
-
-    <Form.Item
-      name={['user', 'percentage']}
-      label="Percentage"
-      rules={[
-        {
-          type: 'number',
-          min: 0,
-          max: 100,
-        },
-      ]}
-    >
-      <InputNumber />
-    </Form.Item>
-    <Form.Item
-      wrapperCol={{
-        ...layout.wrapperCol,
-        offset: 8,
+      {...layout}
+      name="nest-messages"
+      onFinish={onFinish}
+      style={{
+        maxWidth: 800,
       }}
     >
-      <Button type="primary" htmlType="submit">
-        Deploy Smart Contract
-      </Button>
-      <Button type="primary" style={{marginLeft:"20px"}}>
-        Generate Link
-      </Button>
-    </Form.Item>
-  </Form></div>
+      <Form.Item
+        name={['user', 'address']}
+        label="Kol address"
+      >
+        <Input />
+      </Form.Item>
+
+      <Form.Item
+        name={['user', 'percentage']}
+        label="Percentage"
+        rules={[
+          {
+            type: 'number',
+            min: 0,
+            max: 100,
+          },
+        ]}
+      >
+        <InputNumber />
+      </Form.Item>
+      <Form.Item
+        wrapperCol={{
+          ...layout.wrapperCol,
+          offset: 8,
+        }}
+      >
+        <Button type="primary" htmlType="submit">
+          Deploy
+        </Button>
+        <Button type="primary" style={{ marginLeft: "20px" }} onClick={connectWallet}>
+          Connect Wallet
+        </Button>
+        <Button type="primary" style={{ marginLeft: "20px" }} onClick={fetchBalance}>
+          Show Balance
+        </Button>
+        <Button type="primary" style={{ marginLeft: "20px" }} onClick={getNetworkInfo}>
+          GetInfo
+        </Button>
+        <h2>Account Balance: {balance} ETH</h2>
+        <h2>{account}</h2>
+      </Form.Item>
+    </Form></div>
   )
 }
 
@@ -95,7 +140,7 @@ const App = () => {
       }}
     >
       <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
-        <div className="demo-logo-vertical" style={{color:"white",textAlign:"center"}}>
+        <div className="demo-logo-vertical" style={{ color: "white", textAlign: "center" }}>
           <h2>MVP Test</h2>
         </div>
         <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
@@ -119,7 +164,7 @@ const App = () => {
               background: colorBgContainer,
             }}
           >
-            <Mvp/>
+            <Mvp />
           </div>
         </Content>
         <Footer
