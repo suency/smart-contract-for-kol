@@ -42,7 +42,7 @@ const input = {
         '*': ['*'],
       },
     },
-    // evmVersion:'london'
+    evmVersion:'paris'
   },
 };
 
@@ -57,7 +57,7 @@ function getCompileContract() {
   const contractName = Object.keys(compiledContract.contracts[`${fileName}.sol`])[0];
   const contractBytecode = compiledContract.contracts[`${fileName}.sol`][contractName].evm.bytecode.object;
   const contractABI = compiledContract.contracts[`${fileName}.sol`][contractName].abi;
-  
+
   console.log('Contract ABI:', contractABI);
   console.log('Contract Bytecode:', contractBytecode);
   return {
