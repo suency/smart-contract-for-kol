@@ -66,17 +66,21 @@ function getCompileContract() {
   }
 }
 
+app.get('/api/kol', (req, res) => {
+  if(req.query.ref){
+    res.json({info:"ok",req:req.query.ref});
+  } else {
+    res.json({info:"error"});
+  }
+});
 
 
-// 定义 GET 请求的接口
 app.get('/api/compileContract', (req, res) => {
-  // 处理请求逻辑，返回数据
   const data = { message: 'Hello, World!' };
   res.json(getCompileContract());
   // res.json(data);
 });
 
-// 启动服务器监听指定端口
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

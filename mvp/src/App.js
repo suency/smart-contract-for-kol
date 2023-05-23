@@ -176,9 +176,9 @@ const Mvp = () => {
           offset: 8,
         }}
       >
-        <Button type="primary" htmlType="submit">
+        {/* <Button type="primary" htmlType="submit">
           Deploy
-        </Button>
+        </Button> */}
         <Button type="primary" style={{ marginLeft: "10px" }} onClick={connectWallet}>
           Connect Wallet
         </Button>
@@ -189,7 +189,7 @@ const Mvp = () => {
           GetInfo
         </Button>
         <Button type="primary" style={{ marginLeft: "10px" }} onClick={compileInServer}>
-          Compile
+          Compile and Deploy
         </Button>
         <h2>Account Balance: {balance} Matic</h2>
         <h2>{account}</h2>
