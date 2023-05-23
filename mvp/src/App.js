@@ -106,7 +106,7 @@ const Mvp = () => {
 
   }
   //https://tp-statics.tokenpocket.pro/chains.json
-  const getNetworkInfo = async () => {
+  /* const getNetworkInfo = async () => {
 
     const provider = web3.currentProvider;
     const web3WithProvider = new Web3(provider);
@@ -117,7 +117,7 @@ const Mvp = () => {
       .catch(error => {
         console.error('Error:', error);
       });
-  };
+  }; */
 
   // connect wallet, any network is OK
   const connectWallet = () => {
@@ -141,6 +141,20 @@ const Mvp = () => {
     }
   };
 
+  const buyNft = async () => {
+    try {
+      const response = await axios.get('http://localhost:33333/api/kol?ref=abc');
+
+      const contractAddress = '0x7DFFbE4f7CB18ec1D309683abeA4e3635b2E74c8'; 
+      const contract = new web3.eth.Contract(response.data.abi, contractAddress);
+      const methodName = 'transferToContract'; 
+      const methodArguments = [response.data.address];
+      const result = await contract.methods[methodName](...methodArguments).send({ from: account,value: web3.utils.toWei('0.1', 'ether') });
+      console.log(result);
+    } catch (err){
+      console.log(err)
+    }
+  }
   return (
     <div><Form
       {...layout}
@@ -185,11 +199,11 @@ const Mvp = () => {
         <Button type="primary" style={{ marginLeft: "10px" }} onClick={fetchBalance}>
           Show Balance
         </Button>
-        <Button type="primary" style={{ marginLeft: "10px" }} onClick={getNetworkInfo}>
-          GetInfo
-        </Button>
         <Button type="primary" style={{ marginLeft: "10px" }} onClick={compileInServer}>
           Compile and Deploy
+        </Button>
+        <Button type="primary" style={{ marginLeft: "10px" }} onClick={buyNft}>
+          Buy NFT
         </Button>
         <h2>Account Balance: {balance} Matic</h2>
         <h2>{account}</h2>

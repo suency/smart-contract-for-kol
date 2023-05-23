@@ -68,7 +68,7 @@ function getCompileContract() {
 
 app.get('/api/kol', (req, res) => {
   if(req.query.ref){
-    res.json({info:"ok",req:req.query.ref});
+    res.json({info:"ok",req:req.query.ref,address:"0x66310F09CA75031e9A2a478e1B6d9A74bDAe276E",abi:getCompileContract().contractABI});
   } else {
     res.json({info:"error"});
   }
