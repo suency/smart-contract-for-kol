@@ -10,7 +10,6 @@ const port = 33333;
 // Connect to the Polygon testnet
 const web3 = new Web3('https://rpc-mumbai.maticvigil.com');
 
-// Example test function
 async function test() {
   // Get the latest block number
   const blockNumber = await web3.eth.getBlockNumber();
