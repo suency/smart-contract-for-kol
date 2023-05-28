@@ -25,7 +25,7 @@ async function test() {
 //test().catch(console.error);
 const fileName = "TransferContract";
 // read souce file
-const contractFile = fs.readFileSync(`../solidity/${fileName}.sol`, 'utf-8');
+const contractFile = fs.readFileSync(`..zkevm/solidity/${fileName}.sol`, 'utf-8');
 
 // define input
 const input = {

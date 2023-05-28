@@ -83,22 +83,24 @@ const Mvp = () => {
   async function compileInServer() {
 
     try {
-      const response = await axios.get('http://localhost:33333/api/compileContract');
-      const contractABI = response.data.contractABI;
-      const contractBytecode = response.data.contractBytecode;
+      const response = await axios.get('https://data.rabbitgo.io/polygon/project/index');
+
+      // console.log(response)
+      const contractABI = response.data.data[0].contractABI;
+      const contractBytecode = response.data.data[0].contractBytecode;
 
       const contract = new web3.eth.Contract(contractABI);
-      
+
       const deployedContract = await contract.deploy({
         data: contractBytecode,
         arguments: [10] // constructor
       });
-      
+
       await deployedContract.send({
         from: account,
         gas: 1192811
       });
-     // const contractAddress = deployedContract.options.address;
+      // const contractAddress = deployedContract.options.address;
       console.log('contract address:', "ok");
     } catch (error) {
       console.error(error);
@@ -141,19 +143,60 @@ const Mvp = () => {
     }
   };
 
+  // contract 0x7e1f200eada9a31f0bbd01dcc2932c2b700cac36
+  // owner 0xDD63D068f89ceAd467332170fB0DE790a5d26e15
+  // buyer1 0xA643969BCF5a3891f4E51c14F8Aa3491C2189918 2
+  // buyer2 0x2d8483A5cB91c72B5DeD64f11F0a8aF95dd26Dbd 6
+  // proxy 0xd042Babd2AfA53599948ca73f420F8D795FE47Da
   const buyNft = async () => {
     try {
-      const response = await axios.get('http://localhost:33333/api/kol?ref=abc');
+      const response = await axios.get('https://data.rabbitgo.io/polygon/project/index');
 
-      const contractAddress = '0x7DFFbE4f7CB18ec1D309683abeA4e3635b2E74c8'; 
-      const contract = new web3.eth.Contract(response.data.abi, contractAddress);
-      const methodName = 'transferToContract'; 
-      const methodArguments = [response.data.address];
-      const result = await contract.methods[methodName](...methodArguments).send({ from: account,value: web3.utils.toWei('0.1', 'ether') });
+      const contractAddress = '0x7e1f200eada9a31f0bbd01dcc2932c2b700cac36';
+      const contract = new web3.eth.Contract(response.data.data[0].contractABI, contractAddress);
+      const methodName = 'transferToContract';
+      const result = await contract.methods[methodName]('0xd042Babd2AfA53599948ca73f420F8D795FE47Da').send({ from: account, value: web3.utils.toWei('0.05', 'ether') });
       console.log(result);
-    } catch (err){
+    } catch (err) {
       console.log(err)
     }
+  }
+
+  const getAllData = async () => {
+    const response = await axios.get('https://data.rabbitgo.io/polygon/project/index');
+
+    const contractAddress = '0x7e1f200eada9a31f0bbd01dcc2932c2b700cac36';
+    const contract = new web3.eth.Contract(response.data.data[0].contractABI, contractAddress);
+    const methodName = 'getAllData';
+    const result = await contract.methods[methodName]().call();
+    console.log(result);
+  }
+
+  const getEvents = async () => {
+    const response = await axios.get('https://data.rabbitgo.io/polygon/project/index');
+
+    const contractAddress = '0x7e1f200eada9a31f0bbd01dcc2932c2b700cac36';
+    const contract = new web3.eth.Contract(response.data.data[0].contractABI, contractAddress);
+
+    web3.eth.getBlockNumber().then(currentBlockNumber => {
+      // const eventFilter = contract.events.TransferValueEvent({ fromBlock: currentBlockNumber - 200, toBlock: currentBlockNumber });
+
+      // check event
+      contract.getPastEvents('TransferValueEvent', {
+        fromBlock: currentBlockNumber - 1000,
+        toBlock: currentBlockNumber
+      })
+        .then(events => {
+          console.log('checked event:');
+          events.forEach(event => {
+            console.log('event data:', event.returnValues);
+          });
+        })
+        .catch(error => {
+          console.error('event err:', error);
+        });
+    })
+
   }
   return (
     <div><Form
@@ -204,6 +247,12 @@ const Mvp = () => {
         </Button>
         <Button type="primary" style={{ marginLeft: "10px" }} onClick={buyNft}>
           Buy NFT
+        </Button>
+        <Button type="primary" style={{ marginLeft: "10px" }} onClick={getAllData}>
+          Get All Data
+        </Button>
+        <Button type="primary" style={{ marginLeft: "10px" }} onClick={getEvents}>
+          Get Events
         </Button>
         <h2>Account Balance: {balance} Matic</h2>
         <h2>{account}</h2>
