@@ -22,13 +22,6 @@ contract TransferContract {
         uint256 balance;
     }
 
-    struct DataType {
-        address key1;
-        address key2;
-        uint256 value;
-    }
-
-    DataType[] public dataArr;
     // these two attrs are used for retrive data in the future, especially
     address[] public key1List;
     mapping(address => address[]) public key2List;
@@ -57,25 +50,11 @@ contract TransferContract {
         payable(contractCreator).transfer(creatorAmount); // pay to seller
         payable(agentAddress).transfer(agentAmount); // pay to agent
 
-        // keep commission data for specific buyer -> multiple agents
         list[msg.sender][agentAddress] += agentAmount; // update balance in list (buyer and agent)
-
-        // wirte data to dataArr
-        DataType memory temp;
-        temp.key1 = msg.sender;
-        temp.key2 = agentAddress;
-        temp.value = agentAmount;
-        dataArr.push(temp);
-
         emit TransferValueEvent(msg.sender, msg.value, creatorAmount, agentAmount);
     }
 
-    // retrieve all recording commisson data on chain
-    function getAllData() public view returns (DataType[] memory) {
-        return dataArr;
-    }
-
-    // get data from list when knowing specific buyer and agent addresses
+    // get data from list
     function getList(address buyerAddress, address agentAddress) public view returns(uint256) {
         return list[buyerAddress][agentAddress];
     }
