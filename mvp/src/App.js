@@ -143,6 +143,7 @@ const Mvp = () => {
     }
   };
 
+  // following is the testing wallets and contract
   // contract 0x7e1f200eada9a31f0bbd01dcc2932c2b700cac36
   // owner 0xDD63D068f89ceAd467332170fB0DE790a5d26e15
   // buyer1 0xA643969BCF5a3891f4E51c14F8Aa3491C2189918 2
