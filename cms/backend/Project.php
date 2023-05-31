@@ -83,7 +83,7 @@ class Project extends BaseController
          'creator_address' =>  $request->param('creator_address'),
          'rule_name' =>  $request->param('rule_name'),
          'kol_ids' =>  implode(',', $ids),
-         'promotion_code' =>  "hh"
+         'promotion_code' =>  uniqid()
       ];
 
       $re_save = $ProjectModel->save($uploadData);
@@ -101,8 +101,36 @@ class Project extends BaseController
       if ($request->method() == 'OPTIONS') {
          exit('options requests');
       }
-      $db = ProjectModel::select();
-      $re = new ReturnJson($db);
-      return json($re->json);
+      //save koldata
+      $kolData = $request->param('kols');
+      $KolModel = new KolModel();
+      $resultKol = $KolModel->saveAll($kolData);
+
+      
+      $ids = [];
+      for ($i = 0; $i < sizeof($resultKol); $i++) {
+         array_push($ids, $resultKol[$i]["id"]);
+      }
+      
+      $ProjectModel = ProjectModel::where('id',$request->param('id'))->find();
+      
+      $ProjectModel->project_name  =  $request->param('project_name');
+      $ProjectModel->web3_project_name  =  $request->param('web3_project_name');
+      $ProjectModel->project_starttime =  $request->param('project_starttime');
+      $ProjectModel->project_endtime =  $request->param('project_endtime');
+      $ProjectModel->contract_address =  $request->param('contract_address');
+      $ProjectModel->commission_rule =  $request->param('commission_rule');
+      $ProjectModel->creator_address =  $request->param('creator_address');
+      $ProjectModel->rule_name =  $request->param('rule_name');
+      $ProjectModel->kol_ids =  implode(',', $ids);
+
+      $re_save = $ProjectModel->save();
+      // var_dump($re_save);die;
+      if ($re_save) {
+         $temp = new ReturnJson(["msg" => 'Edit Successfullly']);
+      } else {
+         $temp = new ReturnJson(["msg" => 'system error'], "fail");
+      }
+      return json($temp->json);
    }
 }

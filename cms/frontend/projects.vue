@@ -84,22 +84,29 @@
       </el-table-column>
     </el-table>
     <el-dialog z-index="1001" :visible.sync="viewContentVisible" :title="isEdit?'Edit Project':'Create Project'" width="70%" style="margin-bottom: 20px;">
-      <div style="text-align:left;margin-bottom: 20px;">
+      <div v-show="!isEdit" style="text-align:left;margin-bottom: 20px;">
         <el-button type="primary" @click="connectWallet">{{ projectTable.creator_address ? projectTable.creator_address:'Connect Wallet' }}</el-button>
         <el-button v-show="projectTable.creator_address" type="info" @click="deployContract">Deploy Contract</el-button>
       </div>
       <el-form :model="projectTable" label-width="150px" label-position="left">
         <el-form-item label="commission rule">
-          <el-input-number v-model="projectTable.commission_rule" :min="0" :max="100" placeholder="commission rule, eg. 90, 100, 20 (percentage for creator get)" />
+          <el-input-number v-if="!isEdit" v-model="projectTable.commission_rule" :min="0" :max="100" placeholder="commission rule, eg. 90, 100, 20 (percentage for creator get)" />
+          <div v-else>{{ projectTable.commission_rule }}</div>
         </el-form-item>
         <el-form-item label="contract address">
-          <el-input v-model="projectTable.contract_address" placeholder="when you deploy a contract, it will display the address" disabled />
+          <div>{{ projectTable.contract_address }}</div>
+          <!-- <el-input v-model="projectTable.contract_address" placeholder="when you deploy a contract, it will display the address" disabled /> -->
         </el-form-item>
         <el-form-item label="creator address">
-          <el-input v-model="projectTable.creator_address" placeholder="when you deploy a contract, it will display the address" disabled />
+          <div>{{ projectTable.creator_address }}</div>
+          <!-- <el-input v-model="projectTable.creator_address" placeholder="when you deploy a contract, it will display the address" disabled /> -->
         </el-form-item>
         <el-form-item label="project name">
           <el-input v-model="projectTable.project_name" placeholder="project name" />
+        </el-form-item>
+        <el-form-item label="promotion code">
+          <!-- <el-input v-model="projectTable.promotion_code" placeholder="promotion code" disabled/> -->
+          <div>{{ projectTable.promotion_code }}</div>
         </el-form-item>
         <el-form-item label="web3 project name">
           <el-input v-model="projectTable.web3_project_name" placeholder="web3 project name" />
@@ -150,7 +157,7 @@
 </template>
 
 <script>
-import { getProjects, getAbi, createProjects, getProjectsById } from '@/api/polygon'
+import { getProjects, getAbi, createProjects, getProjectsById, updateProjects } from '@/api/polygon'
 import Web3 from 'web3'
 import { isNotEmptyPart } from '@/utils/validate'
 // import _ from 'underscore'
@@ -178,6 +185,7 @@ export default {
         commission: 0,
         commission_rule: 0,
         creator_address: '',
+        promotion_code: '',
         kol_ids: '',
         kols: [
         ]
@@ -255,21 +263,36 @@ export default {
     },
     saveSetting() {
       const that = this
-      /* createProjects(that.projectTable).then(res => {
-        console.log(res)
-        console.log('create')
-      }) */
       var result = isNotEmptyPart(that.projectTable, [
         'project_name', 'web3_project_name', 'project_starttime', 'project_endtime', 'rule_name', 'contract_address', 'creator_address'
       ], that)
       if (result) {
+        const loading = this.$loading({
+          lock: true,
+          text: 'Loading',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        })
         if (!this.isEdit) {
           createProjects(that.projectTable).then(res => {
             console.log(res)
             console.log('create')
+            that.resetForm()
+            that.viewContentVisible = false
+            loading.close()
+            that.initData()
           })
         } else {
-          console.log('edit')
+          // edit the project
+          updateProjects(that.projectTable).then(res => {
+            console.log(res)
+            console.log('edit')
+            that.resetForm()
+            that.viewContentVisible = false
+            loading.close()
+            that.initData()
+          })
+          // console.log(that.projectTable)
         }
       }
     },
