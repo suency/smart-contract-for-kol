@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buy NFT</title>
+    <style>
+        html {
+            font-size: 39px;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
+                'Droid Sans', 'Helvetica Neue', 'Microsoft Yahei', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            width: 100vw;
+            height: 100vh;
+            background-image: linear-gradient(to right top, #051937, #0e254e, #193266, #273f7f, #374c98);
+        }
+
+        body * {
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+
+        .flex-row {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .flex-col {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .justify-start {
+            justify-content: flex-start;
+        }
+
+        .justify-end {
+            justify-content: flex-end;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .justify-around {
+            justify-content: space-around;
+        }
+
+        .justify-evenly {
+            justify-content: space-evenly;
+        }
+
+        .items-start {
+            align-items: flex-start;
+        }
+
+        .items-end {
+            align-items: flex-end;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .items-baseline {
+            align-items: baseline;
+        }
+
+        .items-stretch {
+            align-items: stretch;
+        }
+
+        .self-start {
+            align-self: flex-start;
+        }
+
+        .self-end {
+            align-self: flex-end;
+        }
+
+        .self-center {
+            align-self: center;
+        }
+
+        .self-baseline {
+            align-self: baseline;
+        }
+
+        .self-stretch {
+            align-self: stretch;
+        }
+
+        .flex-1 {
+            flex: 1 1 0%;
+        }
+
+        .flex-auto {
+            flex: 1 1 auto;
+        }
+
+        .grow {
+            flex-grow: 1;
+        }
+
+        .grow-0 {
+            flex-grow: 0;
+        }
+
+        .shrink {
+            flex-shrink: 1;
+        }
+
+        .shrink-0 {
+            flex-shrink: 0;
+        }
+
+        .relative {
+            position: relative;
+        }
+
+        .page {
+            padding-top: 13px;
+            background-color: #ffffff;
+            max-width: 450px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            height: 100%;
+            margin: auto;
+            background-color: white;
+            align-items: center;
+            box-sizing: border-box;
+            border-radius: 5px;
+            box-shadow: rgba(255, 255, 255, 0.1) 0px 1px 1px 0px inset, rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+        }
+
+        .space-y-9>*:not(:first-child) {
+            margin-top: 9px;
+        }
+
+        .group {
+            padding: 0 11px;
+        }
+
+        .space-x-10>*:not(:first-child) {
+            margin-left: 10px;
+        }
+
+        .image {
+            width: 50px;
+            height: 50px;
+        }
+
+        .section {
+            padding: 11px 6px;
+            background-color: #9133e23b;
+            border-radius: 5px;
+            height: 52px;
+        }
+
+        .group_2 {
+            margin-left: 20px;
+            margin-right: 11px;
+            line-height: 19px;
+        }
+
+        .font_1 {
+            font-size: 18px;
+            font-family: Inter;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .text {
+            line-height: 19px;
+        }
+
+        .text_2 {
+            line-height: 17px;
+        }
+
+        .space-y-14>*:not(:first-child) {
+            margin-top: 14px;
+        }
+
+        .image_2 {
+            width: 390px;
+            height: 247px;
+        }
+
+        .group_3 {
+            padding-left: 12px;
+        }
+
+        .space-y-22>*:not(:first-child) {
+            margin-top: 22px;
+        }
+
+        .font_2 {
+            font-size: 24px;
+            font-family: Inter;
+            line-height: 22.5px;
+            font-weight: 600;
+        }
+
+        .text_3 {
+            color: #e21010;
+            line-height: 22px;
+        }
+
+        .text_4 {
+            color: #000000;
+            line-height: 23.5px;
+        }
+
+        .group_4 {
+            overflow-x: hidden;
+        }
+
+        .text_5 {
+            color: #000000;
+            font-size: 18px;
+            font-family: Inter;
+            line-height: 17px;
+        }
+
+        .text_6 {
+            margin-top: 14px;
+            color: #000000;
+            font-size: 16px;
+            font-family: Inter;
+            font-weight: 300;
+            line-height: 28px;
+            width: 382px;
+        }
+
+        .group_5 {
+            margin: 6px 6px 30px 8px;
+        }
+
+        .space-x-26>*:not(:first-child) {
+            margin-left: 26px;
+        }
+
+        .image_3 {
+            width: 30px;
+            height: 30px;
+        }
+
+        .button {
+            padding: 18px 0 16px;
+            background-color: #6282d5;
+            border-radius: 5px;
+            height: 57px;
+        }
+
+        .text_7 {
+            color: #ffffff;
+            font-weight: 300;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="flex-col page space-y-9">
+        <div class="flex-row items-center group space-x-10">
+            <img class="image"
+                src="./app-assets/top.png" />
+            <div class="flex-col justify-start section">
+                <div class="group_2">
+                    <span class="font_1 text">【Sally】</span>
+                    <span class="font_1 text_2">share the product</span>
+                </div>
+            </div>
+        </div>
+        <div class="flex-col space-y-14">
+            <img class="image_2"
+                src="./app-assets/banner.png" />
+            <div class="flex-col group_3 space-y-22">
+                <div class="flex-col items-start space-y-14">
+                    <span class="font_2 text_3">$500</span>
+                    <span class="font_2 text_4">Web3 Beginner Course</span>
+                </div>
+                <div class="flex-col group_4">
+                    <span class="self-start text_5">Description</span>
+                    <span class="self-start text_6">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin
+                        gravida
+                        dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar sic tempor.
+                        Sociis natoque
+                        penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus
+                        pharetra
+                        vulputate, felis
+                    </span>
+                    <div class="flex-row items-center group_5 space-x-26">
+                        <img class="shrink-0 image_3"
+                            src="./app-assets/share.png" />
+                        <div class="flex-col justify-start items-center flex-auto button">
+                            <span class="font_2 text_7">Buy Now</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
