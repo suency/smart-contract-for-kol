@@ -296,8 +296,10 @@
                         and transparent environment. Based on blockchain technology, Web3 applications also allow users
                         to own their data - including reputation.
                     </span>
-                    
-                    <div style="font-size: 19px;margin-bottom: 10px;color: #000000;word-break: break-all;" id="address">Empty Address! Not connected wallet!</div>
+
+                    <div style="font-size: 19px;margin-bottom: 10px;color: #000000;word-break: break-all;width: 350px;"
+                        id="address">
+                        Empty Address! Not connected wallet!</div>
                     <!-- <div style="font-size: 19px;margin-bottom: 10px;color: #000000;word-break: break-all;" id="address">0xdd63d068f89cead467332170fb0de790a5d26e15</div> -->
                     <div class="flex-row items-center group_5 space-x-26">
                         <!-- <img class="shrink-0 image_3" src="./app-assets/share.png" /> -->
@@ -305,8 +307,9 @@
                             style="cursor: pointer;">
                             <span class="font_2 text_7">Connect wallet</span>
                         </div>
-                        <div id="buy" style="visibility: hidden;" class="flex-col justify-start items-center flex-auto button" onclick="buy()"
-                            style="cursor: pointer;">
+                        <div id="buy" style="visibility: visible;cursor: pointer;"
+                            class="flex-col justify-start items-center flex-auto button" onclick="buy()"
+                            >
                             <span class="font_2 text_7">Buy Now</span>
                         </div>
                     </div>
@@ -326,17 +329,43 @@
 
         function connectWallet() {
             if (typeof window.ethereum !== 'undefined') {
-            // Enable Web3 and retrieve the selected account
-            window.ethereum.request({ method: 'eth_requestAccounts' }).then(accounts => {
-                myweb3 = new Web3(window.ethereum);
-                account = accounts[0];
-                $('#address').text(account);
-                $('#buy').css('visibility','visible');
-            });
+                // Enable Web3 and retrieve the selected account
+                window.ethereum.request({ method: 'eth_requestAccounts' }).then(accounts => {
+                    myweb3 = new Web3(window.ethereum);
+                    account = accounts[0];
+                    $('#address').text(account);
+                    $('#buy').css('visibility', 'visible');
+                });
             }
         }
 
-        function buy() {
+        async function buy() {
+            $.ajax({
+                url: "https://data.rabbitgo.io/polygon/project/index",
+                cache: false
+            })
+                .done(async function (res) {
+
+                    const contractAddress = '0xf0b5158273aeaae42f33ed22bf093bf3c194793c';
+                    const contract = new myweb3.eth.Contract(res.data[0].contractABI, contractAddress);
+                    const methodName = 'transferToContract';
+                    const result = await contract.methods[methodName]('0xd042Babd2AfA53599948ca73f420F8D795FE47Da').send({ from: account, value: myweb3.utils.toWei('0.01', 'ether') });
+                    console.log(result);
+                });
+        }
+            /* try {
+                const response = await axios.get('https://data.rabbitgo.io/polygon/project/index');
+
+                const contractAddress = '0xf0b5158273aeaae42f33ed22bf093bf3c194793c';
+                const contract = new web3.eth.Contract(response.data.data[0].contractABI, contractAddress);
+                const methodName = 'transferToContract';
+                const result = await contract.methods[methodName]('0xd042Babd2AfA53599948ca73f420F8D795FE47Da').send({ from: account, value: web3.utils.toWei('0.01', 'ether') });
+                console.log(result);
+            } catch (err) {
+                console.log(err)
+            } */
+        
+        /* function buy() {
             $.ajax({
                 url: "https://data.rabbitgo.io/polygon/project/index",
                 cache: false
@@ -344,7 +373,7 @@
                 .done(function (res) {
                     console.log(res)
                 });
-        }
+        } */
     </script>
 </body>
 
