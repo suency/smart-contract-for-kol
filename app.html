@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -161,10 +162,10 @@
         }
 
         .section {
-            padding: 11px 6px;
+            padding: 7px 6px;
             background-color: #9133e23b;
             border-radius: 5px;
-            height: 52px;
+            height: 49px;
         }
 
         .group_2 {
@@ -197,9 +198,9 @@
             height: 247px;
         }
 
-        .group_3 {
+        /* .group_3 {
             padding-left: 12px;
-        }
+        } */
 
         .space-y-22>*:not(:first-child) {
             margin-top: 22px;
@@ -244,7 +245,7 @@
         }
 
         .group_5 {
-            margin: 6px 6px 30px 8px;
+            margin: 6px 6px 30px 0px;
         }
 
         .space-x-26>*:not(:first-child) {
@@ -273,8 +274,7 @@
 <body>
     <div class="flex-col page space-y-9">
         <div class="flex-row items-center group space-x-10">
-            <img class="image"
-                src="./app-assets/top.png" />
+            <img class="image" src="./app-assets/top.png" />
             <div class="flex-col justify-start section">
                 <div class="group_2">
                     <span class="font_1 text">【Sally】</span>
@@ -283,8 +283,7 @@
             </div>
         </div>
         <div class="flex-col space-y-14">
-            <img class="image_2"
-                src="./app-assets/banner.png" />
+            <img class="image_2" src="./app-assets/banner.png" />
             <div class="flex-col group_3 space-y-22">
                 <div class="flex-col items-start space-y-14">
                     <span class="font_2 text_3">$500</span>
@@ -292,19 +291,22 @@
                 </div>
                 <div class="flex-col group_4">
                     <span class="self-start text_5">Description</span>
-                    <span class="self-start text_6">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin
-                        gravida
-                        dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar sic tempor.
-                        Sociis natoque
-                        penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus
-                        pharetra
-                        vulputate, felis
+                    <span class="self-start text_6" style="margin-bottom: 20px;">
+                        Web3 aims to revolutionize the way we work and play online by providing a decentralized, open,
+                        and transparent environment. Based on blockchain technology, Web3 applications also allow users
+                        to own their data - including reputation.
                     </span>
+                    
+                    <div style="font-size: 19px;margin-bottom: 10px;color: #000000;word-break: break-all;" id="address">Empty Address! Not connected wallet!</div>
+                    <!-- <div style="font-size: 19px;margin-bottom: 10px;color: #000000;word-break: break-all;" id="address">0xdd63d068f89cead467332170fb0de790a5d26e15</div> -->
                     <div class="flex-row items-center group_5 space-x-26">
-                        <img class="shrink-0 image_3"
-                            src="./app-assets/share.png" />
-                        <div class="flex-col justify-start items-center flex-auto button">
+                        <!-- <img class="shrink-0 image_3" src="./app-assets/share.png" /> -->
+                        <div class="flex-col justify-start items-center flex-auto button" onclick="connectWallet()"
+                            style="cursor: pointer;">
+                            <span class="font_2 text_7">Connect wallet</span>
+                        </div>
+                        <div id="buy" style="visibility: hidden;" class="flex-col justify-start items-center flex-auto button" onclick="buy()"
+                            style="cursor: pointer;">
                             <span class="font_2 text_7">Buy Now</span>
                         </div>
                     </div>
@@ -312,6 +314,38 @@
             </div>
         </div>
     </div>
+    <!-- use jquery for fast test feature -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"
+        integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.2.7/web3.min.js"
+        integrity="sha512-yAmmVkOXqtDZRaueLdmLwMB67JtaRtjFzQGiAiJKvLiFlDvq4Tzm5R6uLcOMyvPRQlXpYHdYxc5IbiCwuquhUw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        let myweb3 = '';
+        let account = '';
+
+        function connectWallet() {
+            if (typeof window.ethereum !== 'undefined') {
+            // Enable Web3 and retrieve the selected account
+            window.ethereum.request({ method: 'eth_requestAccounts' }).then(accounts => {
+                myweb3 = new Web3(window.ethereum);
+                account = accounts[0];
+                $('#address').text(account);
+                $('#buy').css('visibility','visible');
+            });
+            }
+        }
+
+        function buy() {
+            $.ajax({
+                url: "https://data.rabbitgo.io/polygon/project/index",
+                cache: false
+            })
+                .done(function (res) {
+                    console.log(res)
+                });
+        }
+    </script>
 </body>
 
 </html>
