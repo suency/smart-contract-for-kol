@@ -33,7 +33,7 @@ contract TransferContract {
     address[] public key1List;
     mapping(address => address[]) public key2List;
 
-    event TransferValueEvent(address indexed sender, uint256 v1, uint256 v2, uint256 v3);
+    event TransferValueEvent(address indexed sender, address indexed agent, uint256 v1, uint256 v2, uint256 v3);
 
     constructor(uint256 initPercentage) {
         require(initPercentage >= 0 && initPercentage <=100 , "Amount should be >= 0 and <= 100");
@@ -67,7 +67,7 @@ contract TransferContract {
         temp.value = agentAmount;
         dataArr.push(temp);
 
-        emit TransferValueEvent(msg.sender, msg.value, creatorAmount, agentAmount);
+        emit TransferValueEvent(msg.sender, agentAddress, msg.value, creatorAmount, agentAmount);
     }
 
     // retrieve all recording commisson data on chain

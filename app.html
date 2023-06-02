@@ -20,6 +20,7 @@
             width: 100vw;
             height: 100vh;
             background-image: linear-gradient(to right top, #051937, #0e254e, #193266, #273f7f, #374c98);
+            position: relative;
         }
 
         body * {
@@ -268,10 +269,44 @@
             color: #ffffff;
             font-weight: 300;
         }
+
+        .loadingWrap{
+            position: fixed;
+            background-color: rgba(0, 0, 0, 0.8);
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .loader {
+            border: 16px solid #f3f3f3;
+            /* Light grey */
+            border-top: 16px solid #3498db;
+            /* Blue */
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            animation: spin 1.5s linear infinite;
+            position: relative;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 
 <body>
+    <div class="loadingWrap">
+        <div class="loader"></div>
+    </div>
     <div class="flex-col page space-y-9">
         <div class="flex-row items-center group space-x-10">
             <img class="image" src="./app-assets/top.png" />
@@ -307,9 +342,9 @@
                             style="cursor: pointer;">
                             <span class="font_2 text_7">Connect wallet</span>
                         </div>
-                        <div id="buy" style="visibility: visible;cursor: pointer;"
-                            class="flex-col justify-start items-center flex-auto button" onclick="buy()"
-                            >
+                        <div id="buy" style="visibility: hidden;cursor: pointer;"
+                            class="flex-col justify-start items-center flex-auto button"
+                            onclick="buy('http://localhost:11111/polygon/project/commisson?ref=kol647a1122868f0&pro=project647a1124bf5d9')">
                             <span class="font_2 text_7">Buy Now</span>
                         </div>
                     </div>
@@ -339,41 +374,30 @@
             }
         }
 
-        async function buy() {
+        async function buy(url) {
+            $('.loadingWrap').css('display','flex');
             $.ajax({
                 url: "https://data.rabbitgo.io/polygon/project/index",
                 cache: false
             })
                 .done(async function (res) {
+                    $.ajax({
+                        url,
+                        cache: false
+                    }).done(async function (kolData) {
+                        // const contractAddress = '0xf0b5158273aeaae42f33ed22bf093bf3c194793c';
+                        const contractAddress = kolData.contract;
+                        const contract = new myweb3.eth.Contract(res.data[0].contractABI, contractAddress);
+                        const methodName = 'transferToContract';
+                        // const result = await contract.methods[methodName]('0xd042Babd2AfA53599948ca73f420F8D795FE47Da').send({ from: account, value: myweb3.utils.toWei('0.01', 'ether') });
+                        const result = await contract.methods[methodName](kolData.kol_address).send({ from: account, value: myweb3.utils.toWei('0.01', 'ether') });
+                        console.log(result);
+                        $('.loadingWrap').css('display','none');
+                    });
 
-                    const contractAddress = '0xf0b5158273aeaae42f33ed22bf093bf3c194793c';
-                    const contract = new myweb3.eth.Contract(res.data[0].contractABI, contractAddress);
-                    const methodName = 'transferToContract';
-                    const result = await contract.methods[methodName]('0xd042Babd2AfA53599948ca73f420F8D795FE47Da').send({ from: account, value: myweb3.utils.toWei('0.01', 'ether') });
-                    console.log(result);
                 });
         }
-            /* try {
-                const response = await axios.get('https://data.rabbitgo.io/polygon/project/index');
 
-                const contractAddress = '0xf0b5158273aeaae42f33ed22bf093bf3c194793c';
-                const contract = new web3.eth.Contract(response.data.data[0].contractABI, contractAddress);
-                const methodName = 'transferToContract';
-                const result = await contract.methods[methodName]('0xd042Babd2AfA53599948ca73f420F8D795FE47Da').send({ from: account, value: web3.utils.toWei('0.01', 'ether') });
-                console.log(result);
-            } catch (err) {
-                console.log(err)
-            } */
-        
-        /* function buy() {
-            $.ajax({
-                url: "https://data.rabbitgo.io/polygon/project/index",
-                cache: false
-            })
-                .done(function (res) {
-                    console.log(res)
-                });
-        } */
     </script>
 </body>
 
