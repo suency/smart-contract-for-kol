@@ -13,7 +13,11 @@ It helps business sectors to make transparent transactions with customers and KO
 
 ## Getting Started
 
-You can just run the MVP which is a simple react Application and it can interact with EVM compatible chains. Currently, it is still under development and functions is limited.
+Url: https://cms.rabbitgo.io/
+
+For Seller who can deploy smart contract:  ( account: test, password:testpwd )
+
+For KOL:  ( account: koltest, password: koltestpwd )
 
 ### Prerequisites
 
