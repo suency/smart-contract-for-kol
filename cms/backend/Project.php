@@ -9,6 +9,7 @@ use think\Request;
 use \Exception;
 use app\polygon\model\ProjectModel;
 use app\polygon\model\KolModel;
+use app\polygon\model\TransactionsModel;
 
 class Project extends BaseController
 {
@@ -43,6 +44,41 @@ class Project extends BaseController
       return json($re->json);
    }
 
+   public function commisson(Request $request)
+   {
+      if ($request->method() == 'OPTIONS') {
+         exit('options requests');
+      }
+      
+      $pro = ProjectModel::where('promotion_code',$request->param('pro'))->select();
+      $db = KolModel::where('code',$request->param('ref'))->select();
+      return json(["status"=>"ok", "kol_address"=>$db[0]['address'], "name" => $db[0]['name'], "contract" => $pro[0]['contract_address']]);
+   }
+
+   public function recordTransaction(Request $request)
+   {
+      if ($request->method() == 'OPTIONS') {
+         exit('options requests');
+      }
+      
+      $transactionInfo = $request->param('transactionInfo');
+      $transactionsModel = new TransactionsModel();
+      $resultTrans = $transactionsModel->save($transactionInfo);
+      
+      return json(["status"=>"ok", "info"=>$resultTrans]);
+   }
+
+   public function getTransaction(Request $request)
+   {
+      if ($request->method() == 'OPTIONS') {
+         exit('options requests');
+      }
+      
+      $db = TransactionsModel::select();
+      $re = new ReturnJson($db);
+      return json($re->json);
+   }
+
    public function getProjectsById(Request $request)
    {
       if ($request->method() == 'OPTIONS') {
@@ -64,6 +100,11 @@ class Project extends BaseController
 
       //save koldata
       $kolData = $request->param('kols');
+      for($i = 0; $i<sizeof($kolData);$i++){
+         $kolData[$i]['code'] = 'kol'.uniqid();
+      }
+
+      // var_dump($kolData);die;
       $KolModel = new KolModel();
       $resultKol = $KolModel->saveAll($kolData);
 
@@ -83,7 +124,7 @@ class Project extends BaseController
          'creator_address' =>  $request->param('creator_address'),
          'rule_name' =>  $request->param('rule_name'),
          'kol_ids' =>  implode(',', $ids),
-         'promotion_code' =>  uniqid()
+         'promotion_code' =>  'project'.uniqid()
       ];
 
       $re_save = $ProjectModel->save($uploadData);
@@ -103,6 +144,11 @@ class Project extends BaseController
       }
       //save koldata
       $kolData = $request->param('kols');
+      for ($i = 0; $i < sizeof($kolData); $i++) {
+         if(empty($kolData[$i]["code"])){
+            $kolData[$i]["code"] = 'kol'.uniqid();
+         }
+      }
       $KolModel = new KolModel();
       $resultKol = $KolModel->saveAll($kolData);
 

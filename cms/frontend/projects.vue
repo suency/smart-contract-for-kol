@@ -83,15 +83,16 @@
         </template>``
       </el-table-column>
     </el-table>
-    <el-dialog z-index="1001" :visible.sync="viewContentVisible" :title="isEdit?'Edit Project':'Create Project'" width="70%" style="margin-bottom: 20px;">
+    <el-dialog z-index="1001" :visible.sync="viewContentVisible" :title="isEdit?'Edit Project':'Create Project'" width="80%" style="margin-bottom: 20px;">
       <div v-show="!isEdit" style="text-align:left;margin-bottom: 20px;">
         <el-button type="primary" @click="connectWallet">{{ projectTable.creator_address ? projectTable.creator_address:'Connect Wallet' }}</el-button>
         <el-button v-show="projectTable.creator_address" type="info" @click="deployContract">Deploy Contract</el-button>
       </div>
       <el-form :model="projectTable" label-width="150px" label-position="left">
         <el-form-item label="commission rule">
-          <el-input-number v-if="!isEdit" v-model="projectTable.commission_rule" :min="0" :max="100" placeholder="commission rule, eg. 90, 100, 20 (percentage for creator get)" />
+          <el-input-number v-if="!isEdit" v-model="projectTable.commission_rule" style="margin-right:10px;" :min="0" :max="100" placeholder="commission rule, eg. 90, 100, 20 (percentage for creator get)" />
           <div v-else>{{ projectTable.commission_rule }}</div>
+          % of transcation amount
         </el-form-item>
         <el-form-item label="contract address">
           <div>{{ projectTable.contract_address }}</div>
@@ -134,15 +135,26 @@
         </el-form-item>
         <div class="kolBlock">
           <el-form-item v-for="(item, index) in projectTable.kols" :key="index" :label="'KOL ' + (index + 1)">
-            <div class="kols">
-              <span style="margin-right: 10px;width: 50px;">name:</span>
-              <el-input v-model="item.name" placeholder="rule name" />
+            <div style="display: flex;flex-direction: column;">
+              <div style="display: flex;">
+                <div class="kols">
+                  <span style="margin-right: 10px;width: 50px;">name:</span>
+                  <el-input v-model="item.name" placeholder="kol name" />
+                </div>
+                <div class="kols">
+                  <span style="margin-left: 30px;margin-right: 10px;width: 112px;">address:</span>
+                  <el-input v-model="item.address" placeholder="kol wallet address" />
+                </div>
+                <el-button type="danger" style="margin: 0 30px;" size="mini" icon="el-icon-delete" @click="removeKOL(item, index)">Remove</el-button>
+              </div>
+              <div v-if="isEdit && item.code" style="display: flex;margin-top: 5px;">
+                <div>{{ `https://cms.rabbitgo.io/app/app.html?ref=${item.code}&pro=${projectTable.promotion_code}` }}</div>
+                <el-button v-clipboard:copy="`https://cms.rabbitgo.io/app/app.html?ref=${item.code}&pro=${projectTable.promotion_code}`" v-clipboard:success="clipboardSuccess" size="mini" style="margin-left: 30px;color:aqua;cursor: pointer;" type="primary" icon="el-icon-document">Copy Link</el-button>
+                <!-- <div>{{ `http://127.0.0.1:5500/sc-for-kol/app.html?ref=${item.code}&pro=${projectTable.promotion_code}` }}</div>
+                <el-button v-clipboard:copy="`http://127.0.0.1:5500/sc-for-kol/app.html?ref=${item.code}&pro=${projectTable.promotion_code}`" v-clipboard:success="clipboardSuccess" size="mini" style="margin-left: 30px;color:aqua;cursor: pointer;" type="primary" icon="el-icon-document">Copy Link</el-button> -->
+              </div>
             </div>
-            <div class="kols">
-              <span style="margin-left: 30px;margin-right: 10px;width: 100px;">address:</span>
-              <el-input v-model="item.address" placeholder="rule name" />
-            </div>
-            <div style="width: 100px;margin: 0 10px; color:burlywood;" @click="removeKOL(item, index)">Remove</div>
+
           </el-form-item>
           <div style="text-align: center;font-size: 20px;" @click="addKOL">Add a KOL</div>
         </div>
@@ -153,6 +165,40 @@
         <el-button type="primary" @click="saveSetting">Confirm</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog z-index="1002" :visible.sync="viewVisibleTransaction" title="Transactions" width="85%" style="margin-bottom: 20px;">
+      <div> <el-table
+        :data="transactionDataOnchain"
+        border
+        style="width: 100%"
+      >
+        <el-table-column
+          label="index"
+          width="100"
+        >
+          <template slot-scope="scope">
+            <span>{{ scope.$index + 1 }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="buyer"
+          label="buyer"
+          width="400"
+        />
+        <el-table-column
+          prop="kol"
+          label="kol"
+          width="400"
+        />
+        <el-table-column
+          prop="commission"
+          label="commission"
+          width="140"
+        />
+      </el-table>
+        <!-- <button @click="getAllData()">test</button> -->
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -160,11 +206,17 @@
 import { getProjects, getAbi, createProjects, getProjectsById, updateProjects } from '@/api/polygon'
 import Web3 from 'web3'
 import { isNotEmptyPart } from '@/utils/validate'
+import axios from 'axios'
+import clipboard from '@/directive/clipboard/index.js'
 // import _ from 'underscore'
 export default {
+  directives: {
+    clipboard
+  },
   data() {
     return {
       viewContentVisible: false,
+      viewVisibleTransaction: false,
       isEdit: false,
       dialogVisible: false,
       projectList: [],
@@ -174,6 +226,7 @@ export default {
       fullscreenLoading: false,
       tableData: [
       ],
+      transactionDataOnchain: [],
       projectTable: {
         project_name: '',
         web3_project_name: '',
@@ -197,6 +250,37 @@ export default {
     this.initData()
   },
   methods: {
+    clipboardSuccess() {
+      this.$message({
+        message: 'Copy successfully',
+        type: 'success',
+        duration: 1500
+      })
+    },
+    async getAllData(contractAdd) {
+      const that = this
+      const response = await axios.get('https://data.rabbitgo.io/polygon/project/index')
+
+      // const contractAddress = '0x7e1f200eada9a31f0bbd01dcc2932c2b700cac36'
+      const contractAddress = contractAdd
+      const myWeb3 = new Web3(window.ethereum)
+      const contract = new myWeb3.eth.Contract(response.data.data[0].contractABI, contractAddress)
+      const methodName = 'getAllData'
+      const result = await contract.methods[methodName]().call()
+      const temp = result.map((item, index) => {
+        if (item.length > 0) {
+          return {
+            buyer: item[0],
+            kol: item[1],
+            commission: item[2] / (10 ** 18)
+          }
+        } else {
+          return {}
+        }
+      })
+      that.transactionDataOnchain = temp
+      // console.log(temp)
+    },
     removeKOL(item, index) {
       const that = this
       that.projectTable.kols.splice(index, 1)
@@ -308,8 +392,17 @@ export default {
       that.isEdit = false
       that.viewContentVisible = true
     },
-    handleTranscation() {
-
+    async handleTranscation(item) {
+      this.viewVisibleTransaction = true
+      const loading = this.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
+      this.getAllData(item.row.contract_address)
+      // await this.getAllData('0x7e1f200eada9a31f0bbd01dcc2932c2b700cac36') // for testing data
+      loading.close()
     },
     handleEdit(data) {
       var that = this

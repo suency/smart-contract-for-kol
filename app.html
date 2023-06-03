@@ -270,7 +270,7 @@
             font-weight: 300;
         }
 
-        .loadingWrap{
+        .loadingWrap {
             position: fixed;
             background-color: rgba(0, 0, 0, 0.8);
             width: 100vw;
@@ -279,6 +279,7 @@
             align-items: center;
             justify-content: center;
         }
+
         .loader {
             border: 16px solid #f3f3f3;
             /* Light grey */
@@ -361,6 +362,12 @@
     <script>
         let myweb3 = '';
         let account = '';
+        let baseUrl = 'https://data.rabbitgo.io/';
+        // let baseUrl = 'http://localhost:11111/';
+        // let baseUrl = 'https://cms.rabbitgo.io/app/';
+        const urlParams = new URLSearchParams(window.location.search);
+        const ref = urlParams.get('ref');
+        const pro = urlParams.get('pro');
 
         function connectWallet() {
             if (typeof window.ethereum !== 'undefined') {
@@ -374,8 +381,20 @@
             }
         }
 
-        async function buy(url) {
-            $('.loadingWrap').css('display','flex');
+        /* $.ajax({
+            url: `${baseUrl}polygon/project/recordTransaction`,
+            type: "POST",
+            dataType: 'json',
+            contentType: "application/json",
+            data: JSON.stringify({transactionInfo:{ a: 'abc', b: 'cde' }})
+        }).done(async function (transData) {
+            console.log(transData)
+        }) */
+
+        async function buy() {
+            //http://localhost:11111/polygon/project/commisson?ref=kol647a1122868f0&pro=project647a1124bf5d9
+            const url = `${baseUrl}polygon/project/commisson?ref=${ref}&pro=${pro}`;
+            $('.loadingWrap').css('display', 'flex');
             $.ajax({
                 url: "https://data.rabbitgo.io/polygon/project/index",
                 cache: false
@@ -391,8 +410,35 @@
                         const methodName = 'transferToContract';
                         // const result = await contract.methods[methodName]('0xd042Babd2AfA53599948ca73f420F8D795FE47Da').send({ from: account, value: myweb3.utils.toWei('0.01', 'ether') });
                         const result = await contract.methods[methodName](kolData.kol_address).send({ from: account, value: myweb3.utils.toWei('0.01', 'ether') });
-                        console.log(result);
-                        $('.loadingWrap').css('display','none');
+                        $('.loadingWrap').css('display', 'none');
+
+                        //write data to db
+                        const transactionInfo = {
+                            blockHash: result.blockHash,
+                            blockNumber: result.blockNumber,
+                            cumulativeGasUsed: result.cumulativeGasUsed,
+                            effectiveGasPrice: result.effectiveGasPrice,
+                            agent: result.events?.TransferValueEvent?.returnValues?.agent,
+                            buyer: result.events?.TransferValueEvent?.returnValues?.sender,
+                            contract: result.to,
+                            transactionHash: result.transactionHash,
+                            gasUsed: result.gasUsed,
+                            transactionIndex: result.transactionIndex,
+                            buyer_value: result.events?.TransferValueEvent?.returnValues?.v1,
+                            seller_value: result.events?.TransferValueEvent?.returnValues?.v2,
+                            agent_value: result.events?.TransferValueEvent?.returnValues?.v3
+                        }
+                        
+                        $.ajax({
+                            url: `${baseUrl}polygon/project/recordTransaction`,
+                            type: "POST",
+                            dataType: 'json',
+                            contentType: "application/json",
+                            data: JSON.stringify({transactionInfo})
+                        }).done(async function (transData) {
+                            console.log(transData)
+                        })
+                        
                     });
 
                 });
