@@ -28,6 +28,17 @@
             flex-shrink: 0;
         }
 
+        .wrap {
+            align-items: center;
+        }
+
+        .mainContent {
+            display: flex;
+            box-sizing: border-box;
+            padding: 0 30px;
+            width: 380px;
+        }
+
         .flex-row {
             display: flex;
             flex-direction: row;
@@ -133,7 +144,7 @@
         .page {
             padding-top: 13px;
             background-color: #ffffff;
-            max-width: 450px;
+            max-width: 380px;
             overflow-y: auto;
             overflow-x: hidden;
             height: 100%;
@@ -146,7 +157,7 @@
         }
 
         .space-y-9>*:not(:first-child) {
-            margin-top: 9px;
+            margin-top: 15px;
         }
 
         .group {
@@ -163,15 +174,15 @@
         }
 
         .section {
-            padding: 7px 6px;
+            padding: 7px 14px;
             background-color: #9133e23b;
             border-radius: 5px;
             height: 49px;
         }
 
         .group_2 {
-            margin-left: 20px;
-            margin-right: 11px;
+            /* margin-left: 20px;
+            margin-right: 11px; */
             line-height: 19px;
         }
 
@@ -195,8 +206,8 @@
         }
 
         .image_2 {
-            width: 390px;
-            height: 247px;
+            width: 330px;
+            border-radius: 10px;
         }
 
         /* .group_3 {
@@ -242,7 +253,7 @@
             font-family: Inter;
             font-weight: 300;
             line-height: 28px;
-            width: 382px;
+            word-break: break-all;
         }
 
         .group_5 {
@@ -292,6 +303,26 @@
             position: relative;
         }
 
+        .myButton {
+            background-color: #6282d5;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 40px;
+            padding: 10px;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+            color: white;
+        }
+
+        .myButton:disabled {
+            border: 1px solid #999999;
+            background-color: #cccccc;
+            color: #666666;
+        }
+
         @keyframes spin {
             0% {
                 transform: rotate(0deg);
@@ -300,6 +331,61 @@
             100% {
                 transform: rotate(360deg);
             }
+        }
+
+        .popup .overlay {
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1;
+            display: none;
+        }
+
+        .popup .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: #fff;
+            width: 250px;
+            height: 130px;
+            z-index: 2;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            font-family: "Open Sans", sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+        }
+
+        .popup .close-btn {
+            cursor: pointer;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            width: 30px;
+            height: 30px;
+            background: #222;
+            color: #fff;
+            font-size: 25px;
+            font-weight: 600;
+            line-height: 30px;
+            text-align: center;
+            border-radius: 50%;
+        }
+
+        .popup.active .overlay {
+            display: block;
+        }
+
+        .popup.active .content {
+            transition: all 300ms ease-in-out;
+            transform: translate(-50%, -50%) scale(1);
         }
     </style>
 </head>
@@ -318,11 +404,11 @@
                 </div>
             </div>
         </div>
-        <div class="flex-col space-y-14">
+        <div class="flex-col space-y-14 wrap">
             <img class="image_2" src="./app-assets/banner.png" />
-            <div class="flex-col group_3 space-y-22">
+            <div class="flex-col group_3 space-y-22 mainContent">
                 <div class="flex-col items-start space-y-14">
-                    <span class="font_2 text_3">$500</span>
+                    <span class="font_2 text_3">$0.01</span>
                     <span class="font_2 text_4">Web3 Beginner Course</span>
                 </div>
                 <div class="flex-col group_4">
@@ -333,24 +419,32 @@
                         to own their data - including reputation.
                     </span>
 
-                    <div style="font-size: 19px;margin-bottom: 10px;color: #000000;word-break: break-all;width: 350px;"
+                    <div style="font-size: 16px;margin-bottom: 10px;color: #000000;word-break: break-all;width: 310px;"
                         id="address">
                         Empty Address! Not connected wallet!</div>
                     <!-- <div style="font-size: 19px;margin-bottom: 10px;color: #000000;word-break: break-all;" id="address">0xdd63d068f89cead467332170fb0de790a5d26e15</div> -->
                     <div class="flex-row items-center group_5 space-x-26">
                         <!-- <img class="shrink-0 image_3" src="./app-assets/share.png" /> -->
-                        <div class="flex-col justify-start items-center flex-auto button" onclick="connectWallet()"
-                            style="cursor: pointer;">
-                            <span class="font_2 text_7">Connect wallet</span>
-                        </div>
-                        <div id="buy" style="visibility: hidden;cursor: pointer;"
-                            class="flex-col justify-start items-center flex-auto button"
+                        <button class="myButton" id="myButton" onclick="connectWallet()">
+                            Connect Wallet
+                        </button>
+                        <button id="buy" style="visibility: hidden;" class="myButton"
                             onclick="buy('http://localhost:11111/polygon/project/commisson?ref=kol647a1122868f0&pro=project647a1124bf5d9')">
-                            <span class="font_2 text_7">Buy Now</span>
-                        </div>
+                            Buy It Now
+                        </button>
+                        <!-- <button onclick="test()">test</button> -->
+                        <!-- <button onclick="togglePopup()">test</button> -->
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="popup" id="popup-1">
+        <div class="overlay"></div>
+        <div class="content">
+            <div class="close-btn" onclick="togglePopup()">&times;</div>
+            <p style="font-size: 18px;">Paid Successfully!</p>
         </div>
     </div>
     <!-- use jquery for fast test feature -->
@@ -362,12 +456,26 @@
     <script>
         let myweb3 = '';
         let account = '';
+        // for production
         let baseUrl = 'https://data.rabbitgo.io/';
+        // let currentAccount = null;
+        // for dev
         // let baseUrl = 'http://localhost:11111/';
         // let baseUrl = 'https://cms.rabbitgo.io/app/';
         const urlParams = new URLSearchParams(window.location.search);
         const ref = urlParams.get('ref');
         const pro = urlParams.get('pro');
+
+        $(document).ready(function () {
+            checkConnection();
+        });
+
+        function togglePopup() {
+            document.getElementById("popup-1").classList.toggle("active");
+        }
+        function checkConnection() {
+            window.ethereum.request({ method: 'eth_accounts' }).then(handleAccountsChanged).catch(console.error);
+        }
 
         function connectWallet() {
             if (typeof window.ethereum !== 'undefined') {
@@ -375,12 +483,47 @@
                 window.ethereum.request({ method: 'eth_requestAccounts' }).then(accounts => {
                     myweb3 = new Web3(window.ethereum);
                     account = accounts[0];
-                    $('#address').text(account);
-                    $('#buy').css('visibility', 'visible');
+                    checkConnection();
+                    /* $('#address').text('Address: ' + account);
+                    $('#buy').css('visibility', 'visible'); */
                 });
             }
         }
 
+        function handleAccountsChanged(accounts) {
+            if (accounts.length === 0) {
+                $('#address').text(`You're not connected to MetaMask`);
+                $('#buy').css('visibility', 'hidden');
+                $('#myButton').disabled = false;
+                $('#myButton').prop('disabled', false);
+                $('#myButton').text('Connect Wallet');
+                return;
+            } else if (accounts[0] !== account) {
+                account = accounts[0];
+            }
+            myweb3 = new Web3(window.ethereum);
+            $('#address').text('Address: ' + account);
+            $('#buy').css('visibility', 'visible');
+            $('#myButton').disabled = true;
+            $('#myButton').prop('disabled', true);
+            $('#myButton').text('Connected');
+        }
+
+        window.ethereum.on('accountsChanged', (accounts) => {
+            account = accounts[0]
+            checkConnection()
+        });
+
+        function test() {
+            // ethereum.request({ method: 'eth_accounts' }).then(handleAccountsChanged).catch(console.error);
+            window.ethereum.request({ method: 'eth_disconnect' }) // Disconnect the wallet
+                .then(() => {
+                    console.log('Wallet disconnected');
+                })
+                .catch((error) => {
+                    console.error('Error disconnecting wallet:', error);
+                });
+        }
         /* $.ajax({
             url: `${baseUrl}polygon/project/recordTransaction`,
             type: "POST",
@@ -411,6 +554,7 @@
                         // const result = await contract.methods[methodName]('0xd042Babd2AfA53599948ca73f420F8D795FE47Da').send({ from: account, value: myweb3.utils.toWei('0.01', 'ether') });
                         const result = await contract.methods[methodName](kolData.kol_address).send({ from: account, value: myweb3.utils.toWei('0.01', 'ether') });
                         $('.loadingWrap').css('display', 'none');
+                        togglePopup()
 
                         //write data to db
                         const transactionInfo = {
@@ -428,17 +572,21 @@
                             seller_value: result.events?.TransferValueEvent?.returnValues?.v2,
                             agent_value: result.events?.TransferValueEvent?.returnValues?.v3
                         }
-                        
+
                         $.ajax({
                             url: `${baseUrl}polygon/project/recordTransaction`,
                             type: "POST",
                             dataType: 'json',
                             contentType: "application/json",
-                            data: JSON.stringify({transactionInfo})
+                            data: JSON.stringify({ transactionInfo })
                         }).done(async function (transData) {
+                            // status: "ok"
+                            /* if (transData.status === "ok") {
+                                togglePopup()
+                            } */
                             console.log(transData)
                         })
-                        
+
                     });
 
                 });
